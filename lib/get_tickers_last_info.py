@@ -21,7 +21,7 @@ def send_to_kafka():
 
     # Create Kafka producer
     producer = KafkaProducer(
-        bootstrap_servers='localhost:9092',
+        bootstrap_servers='192.168.1.212:9092',
         value_serializer=lambda v: json.dumps(v).encode('utf-8'),
         key_serializer=lambda k: k.encode('utf-8'),
     )
@@ -31,3 +31,6 @@ def send_to_kafka():
         topic='tickers_last_info',
         value=get_tickers_last_info(get_tickers.sp500_tickers())
     )
+
+
+send_to_kafka()
