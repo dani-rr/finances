@@ -12,7 +12,7 @@ def sp500_tickers():
 
     df = pd.read_html(StringIO(response.text))[0]
     tickers = df['Symbol'].tolist()
-    tickers = ["try1200"]
+    tickers = ["try1400"]
     return tickers
 
 def send_to_kafka():
