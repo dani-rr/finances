@@ -32,9 +32,8 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
-    - /home/daniel/code/finances/airflow/dags:/opt/airflow/dags/finances
+    - /home/daniel/code/finances/infra/airflow/dags:/opt/airflow/dags/finances
     - /var/run/docker.sock:/var/run/docker.sock    
-    - /home/daniel/code/finances:/opt/airflow/finances:cached
 
   networks:
     - d1_network  # attach the service to the network

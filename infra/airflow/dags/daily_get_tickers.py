@@ -14,10 +14,17 @@ with DAG(
     DockerOperator(
         task_id='get_tickers',
         image='finances:latest',
-        command='python lib/get_tickers.py',
+        # Run the mounted script via an absolute path inside the container
+        command='python /app/lib/get_tickers.py',
         api_version='auto',
         auto_remove="force",  # updated for new provider version
         docker_url='unix://var/run/docker.sock',
-        network_mode='d1_network'
+        network_mode='d1_network',
+        # Bind-mount host code into the task container for live development
+        mounts=[
+            Mount(target='/app/lib', source='/home/daniel/code/finances/lib', type='bind'),
+            Mount(target='/app/src', source='/home/daniel/code/finances/src', type='bind'),
+        ],
+        # Ensure Python can import modules from the mounted folders
+        environment={'PYTHONPATH': '/app/lib:/app/src'},
     )
-
