@@ -3,7 +3,7 @@ import json
 from kafka import KafkaProducer
 import requests
 from io import StringIO
-from config import KAFKA_BOOTSTRAP, TICKERS_TOPIC
+from finances.config import KAFKA_BOOTSTRAP, TICKERS_TOPIC
 
 def sp500_tickers(source_url, user_agent="Mozilla/5.0"):
     headers = {"User-Agent": user_agent}  # Pretend to be a browser
@@ -11,7 +11,8 @@ def sp500_tickers(source_url, user_agent="Mozilla/5.0"):
     response.raise_for_status()  # raises an error if not 200 OK
 
     df = pd.read_html(StringIO(response.text))[0]
-    return df['Symbol'].tolist()
+    ticker_list = [s.replace('.', '-') for s in df['Symbol'].tolist()]  
+    return ticker_list
 
 def send_to_kafka(tickers, bootstrap_servers, topic):
     producer = KafkaProducer(

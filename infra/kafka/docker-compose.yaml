@@ -6,6 +6,8 @@ networks:
 
 services:
   kafka:
+    volumes:
+      - kafka_data:/tmp/kraft-combined-logs
     image: apache/kafka:latest
     container_name: kafka
     ports:
@@ -22,6 +24,10 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://192.168.1.212:9092
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
 
       # Storage directory (inside container)
       KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
@@ -30,3 +36,6 @@ services:
       - d1_network
 
     restart: unless-stopped
+
+volumes:
+  kafka_data:

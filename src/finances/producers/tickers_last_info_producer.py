@@ -3,14 +3,14 @@ import yfinance as yf
 from kafka import KafkaProducer
 
 from finances.config import KAFKA_BOOTSTRAP, TICKERS_LAST_INFO_TOPIC
-from finances.get_tickers import sp500_tickers
+from finances.producers.tickers_producer import sp500_tickers
 import pandas as pd
 
 def get_tickers_last_info(tickers):
     df = yf.download(
         tickers,
         period="1d",
-        interval="15m",
+        interval="5m",
         rounding=False,
         group_by="ticker",  # keeps a consistent MultiIndex when multiple tickers
     )
@@ -22,21 +22,20 @@ def get_tickers_last_info(tickers):
     return last_row_to_json(last_row)
 
 def last_row_to_json(last_row):
-    # Coerce numpy types to native Python for JSON safety
-    def to_native(value):
-        if hasattr(value, "item"):
-            return value.item()
-        return value
+
+    ts = last_row.name  # usually pandas.Timestamp
 
     if hasattr(last_row.index, "levels"):  # MultiIndex columns
-        swapped = last_row.swaplevel().sort_index()
+        data = (
+            last_row
+            .unstack()
+            .to_dict(orient="index")
+        )
         return {
-            ticker: {k: to_native(v) for k, v in fields.to_dict().items()}
-            for ticker, fields in swapped.groupby(level=0)
+            "timestamp": ts.isoformat() if hasattr(ts, "isoformat") else str(ts),
+            "data": data,
         }
 
-    # Single-ticker case: columns are simple Index
-    return {k: to_native(v) for k, v in last_row.to_dict().items()}
 
 def send_to_kafka(payload, bootstrap_servers, topic):
     producer = KafkaProducer(
