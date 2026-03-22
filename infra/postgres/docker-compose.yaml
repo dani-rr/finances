@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: finances
       POSTGRES_USER: finances
-      POSTGRES_PASSWORD: $(POSTGRES_PASSWORD)
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
