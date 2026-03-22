@@ -1,18 +1,8 @@
-import psycopg
-import os
-from finances.config import POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD
-
-conn = psycopg.connect(
-    host=POSTGRES_HOST,
-    port=POSTGRES_PORT,
-    dbname=POSTGRES_DB,
-    user=POSTGRES_USER,
-    password=POSTGRES_PASSWORD,
-)
+from finances.db.psql_conn import db_conn
 
 
 def init_stage() -> None:
-
+    conn = db_conn()
     with conn.cursor() as cur:
         
         cur.execute("""
@@ -38,3 +28,7 @@ def init_stage() -> None:
                         PRIMARY KEY (kfk_topic, kfk_partition, kfk_offset)                     
                     )
             """)
+
+
+if __name__ == "__main__":
+    init_stage()
